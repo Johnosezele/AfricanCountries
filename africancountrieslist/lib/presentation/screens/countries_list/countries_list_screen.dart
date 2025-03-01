@@ -50,7 +50,7 @@ class CountriesListScreen extends StatelessWidget {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               ErrorDialog.show(
                 context,
-                title: 'Error Loading Countries',
+                title: 'Unable to Load Countries',
                 message: state.message,
                 onRetry: () {
                   context.read<CountriesBloc>().add(const FetchCountriesEvent());

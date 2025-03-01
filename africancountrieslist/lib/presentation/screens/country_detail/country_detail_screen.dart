@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/constants/app_constants.dart';
 import '../../../data/repositories/countries_repository.dart';
 import '../../blocs/country_detail/country_detail_bloc.dart';
 import '../../blocs/country_detail/country_detail_event.dart';
@@ -45,7 +44,7 @@ class CountryDetailScreen extends StatelessWidget {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 ErrorDialog.show(
                   context,
-                  title: 'Error Loading Country Details',
+                  title: 'Country Information Unavailable',
                   message: state.message,
                   onRetry: () {
                     context

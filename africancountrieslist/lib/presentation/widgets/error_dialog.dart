@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/utils/error_messages.dart';
 
 class ErrorDialog extends StatelessWidget {
   final String title;
@@ -18,11 +19,13 @@ class ErrorDialog extends StatelessWidget {
     required String message,
     VoidCallback? onRetry,
   }) {
+    final userFriendlyMessage = ErrorMessages.getUserFriendlyMessage(message);
+    
     showDialog(
       context: context,
       builder: (context) => ErrorDialog(
         title: title,
-        message: message,
+        message: userFriendlyMessage,
         onRetry: onRetry,
       ),
     );
