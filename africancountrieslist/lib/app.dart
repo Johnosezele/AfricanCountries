@@ -4,7 +4,7 @@ import 'core/constants/app_constants.dart';
 import 'core/themes/app_theme.dart';
 import 'data/repositories/countries_repository.dart';
 import 'presentation/blocs/countries/countries_bloc.dart';
-import 'presentation/screens/countries_list/countries_list_screen.dart';
+import 'presentation/screens/splash/splash_screen.dart';
 import 'presentation/widgets/network_connection_dialog.dart';
 
 class App extends StatelessWidget {
@@ -19,11 +19,12 @@ class App extends StatelessWidget {
           repository: context.read<CountriesRepository>(),
         ),
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: AppConstants.appTitle,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           home: const NetworkConnectionDialog(
-            child: CountriesListScreen(),
+            child: SplashScreen(),
           ),
         ),
       ),
