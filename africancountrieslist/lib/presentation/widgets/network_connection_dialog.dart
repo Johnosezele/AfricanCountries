@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
@@ -14,45 +16,55 @@ class NetworkConnectionDialog extends StatefulWidget {
 }
 
 class _NetworkConnectionDialogState extends State<NetworkConnectionDialog> {
+  late final Connectivity _connectivity;
+  StreamSubscription<ConnectivityResult>? _subscription;
   bool _showDialog = false;
 
   @override
   void initState() {
     super.initState();
-    _checkConnectivity();
+    _connectivity = Connectivity();
+    _initConnectivity();
   }
 
-  Future<void> _checkConnectivity() async {
-    final connectivity = Connectivity();
-    
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _initConnectivity() async {
     try {
       // Check initial connection state
-      final result = await connectivity.checkConnectivity();
-      _updateConnectionStatus(result as ConnectivityResult);
+      final result = await _connectivity.checkConnectivity();
+      _handleConnectivityResult(result as ConnectivityResult);
 
       // Listen for connectivity changes
-      await connectivity.onConnectivityChanged.listen((result) {
-        _updateConnectionStatus(result as ConnectivityResult);
-      }).asFuture();
+      _subscription = _connectivity.onConnectivityChanged.listen(
+        _handleConnectivityResult as void Function(List<ConnectivityResult> event)?,
+        onError: (error) {
+          debugPrint('Error monitoring connectivity: $error');
+        },
+      ) as StreamSubscription<ConnectivityResult>?;
     } catch (e) {
-      debugPrint('Error checking connectivity: $e');
+      debugPrint('Error initializing connectivity monitoring: $e');
     }
   }
 
-  void _updateConnectionStatus(ConnectivityResult result) {
+  void _handleConnectivityResult(ConnectivityResult result) {
     final hasConnection = result != ConnectivityResult.none;
     
-    if (mounted) {
-      setState(() {
-        if (!hasConnection && !_showDialog) {
-          _showDialog = true;
-          _showNoConnectionDialog();
-        } else if (hasConnection && _showDialog) {
-          _showDialog = false;
-          Navigator.of(context, rootNavigator: true).pop();
-        }
-      });
-    }
+    if (!mounted) return;
+
+    setState(() {
+      if (!hasConnection && !_showDialog) {
+        _showDialog = true;
+        _showNoConnectionDialog();
+      } else if (hasConnection && _showDialog) {
+        _showDialog = false;
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    });
   }
 
   Future<void> _showNoConnectionDialog() async {
