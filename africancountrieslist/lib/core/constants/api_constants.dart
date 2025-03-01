@@ -6,6 +6,6 @@ class ApiConstants {
   static String getCountryByName(String name) => '$countryByNameEndpoint/$name';
   
   static const Map<String, String> defaultFields = {
-    'fields': 'name,languages,capital,flags'
+    'fields': 'name,languages,capital,flags,population,area,currencies,region,subregion,timezones,borders,maps,landlocked'
   };
 }

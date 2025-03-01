@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../data/models/country.dart';
+import 'detail_section.dart';
 
 class CountryInfoSection extends StatelessWidget {
   final Country country;
@@ -10,68 +11,98 @@ class CountryInfoSection extends StatelessWidget {
     required this.country,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(AppConstants.defaultPadding),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (country.capital.isNotEmpty) ...[
-            _buildInfoTile(
-              context,
-              title: 'Capital',
-              content: country.capital.first,
-              icon: Icons.location_city,
-            ),
-            const SizedBox(height: AppConstants.defaultPadding),
-          ],
-          if (country.languages.isNotEmpty) ...[
-            _buildInfoTile(
-              context,
-              title: 'Languages',
-              content: country.languages.values.join(', '),
-              icon: Icons.language,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
+  String _formatNumber(int number) {
+  return number.toString().replaceAllMapped(
+    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    (Match m) => '${m[1]},',
+  );
+}
 
-  Widget _buildInfoTile(
-    BuildContext context, {
-    required String title,
-    required String content,
-    required IconData icon,
-  }) {
-    return Row(
+String _formatArea(double area) {
+  return '${_formatNumber(area.round())} km²';
+}
+
+
+@override
+Widget build(BuildContext context) {
+  return SingleChildScrollView(
+    padding: const EdgeInsets.symmetric(vertical: 16),
+    child: Column(
       children: [
-        Icon(
-          icon,
-          size: 24,
-          color: Theme.of(context).colorScheme.primary,
+        DetailSection(
+          title: 'Basic Information',
+          children: [
+            DetailItem(
+              label: 'Official Name',
+              value: country.officialName,
+            ),
+            DetailItem(
+              label: 'Capital',
+              value: country.capital.join(', '),
+            ),
+            DetailItem(
+              label: 'Region',
+              value: '${country.region}, ${country.subregion}',
+            ),
+          ],
         ),
-        const SizedBox(width: AppConstants.defaultPadding),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        DetailSection(
+          title: 'Demographics',
+          children: [
+            DetailItem(
+              label: 'Population',
+              value: _formatNumber(country.population),
+            ),
+            DetailItem(
+              label: 'Area',
+              value: _formatArea(country.area),
+            ),
+            DetailItem(
+              label: 'Languages',
+              value: country.languages.values.join(', '),
+            ),
+          ],
+        ),
+        if (country.currency.isNotEmpty)
+          DetailSection(
+            title: 'Economy',
+            children: [
+              DetailItem(
+                label: 'Currency',
+                value: '${country.currency} (${country.currencySymbol})',
+              ),
+            ],
+          ),
+        DetailSection(
+          title: 'Geography',
+          children: [
+            DetailItem(
+              label: 'Timezones',
+              value: country.timezones.join(', '),
+            ),
+            if (country.borders.isNotEmpty)
+              DetailItem(
+                label: 'Borders',
+                value: country.borders.join(', '),
+              ),
+            DetailItem(
+              label: 'Terrain',
+              value: country.landlocked ? 'Landlocked' : 'Coastal',
+            ),
+          ],
+        ),
+        if (country.flagDescription.isNotEmpty)
+          DetailSection(
+            title: 'Flag Description',
             children: [
               Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                content,
+                country.flagDescription,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
           ),
-        ),
       ],
-    );
-  }
+    ),
+  );
+}
 }
