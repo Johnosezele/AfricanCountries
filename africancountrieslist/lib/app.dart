@@ -5,6 +5,7 @@ import 'core/themes/app_theme.dart';
 import 'data/repositories/countries_repository.dart';
 import 'presentation/blocs/countries/countries_bloc.dart';
 import 'presentation/screens/countries_list/countries_list_screen.dart';
+import 'presentation/widgets/network_connection_dialog.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -21,7 +22,9 @@ class App extends StatelessWidget {
           title: AppConstants.appTitle,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          home: const CountriesListScreen(),
+          home: const NetworkConnectionDialog(
+            child: CountriesListScreen(),
+          ),
         ),
       ),
     );
