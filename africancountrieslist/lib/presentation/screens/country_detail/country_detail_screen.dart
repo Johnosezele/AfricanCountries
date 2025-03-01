@@ -5,7 +5,7 @@ import '../../../data/repositories/countries_repository.dart';
 import '../../blocs/country_detail/country_detail_bloc.dart';
 import '../../blocs/country_detail/country_detail_event.dart';
 import '../../blocs/country_detail/country_detail_state.dart';
-import '../../widgets/error_view.dart';
+import '../../widgets/error_dialog.dart';
 import '../../widgets/loading_indicator.dart';
 import 'widgets/country_header.dart';
 import 'widgets/country_info_section.dart';
@@ -42,14 +42,19 @@ class CountryDetailScreen extends StatelessWidget {
                 ),
               );
             } else if (state is CountryDetailError) {
-              return ErrorView(
-                message: state.message,
-                onRetry: () {
-                  context
-                      .read<CountryDetailBloc>()
-                      .add(FetchCountryDetailEvent(countryName));
-                },
-              );
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                ErrorDialog.show(
+                  context,
+                  title: 'Error Loading Country Details',
+                  message: state.message,
+                  onRetry: () {
+                    context
+                        .read<CountryDetailBloc>()
+                        .add(FetchCountryDetailEvent(countryName));
+                  },
+                );
+              });
+              return const SizedBox.shrink();
             }
             return const SizedBox.shrink();
           },

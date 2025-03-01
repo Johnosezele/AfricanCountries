@@ -4,7 +4,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../blocs/countries/countries_bloc.dart';
 import '../../blocs/countries/countries_event.dart';
 import '../../blocs/countries/countries_state.dart';
-import '../../widgets/error_view.dart';
+import '../../widgets/error_dialog.dart';
 import '../../widgets/loading_indicator.dart';
 import '../country_detail/country_detail_screen.dart';
 import 'widgets/country_card.dart';
@@ -47,12 +47,17 @@ class CountriesListScreen extends StatelessWidget {
               },
             );
           } else if (state is CountriesError) {
-            return ErrorView(
-              message: state.message,
-              onRetry: () {
-                context.read<CountriesBloc>().add(const FetchCountriesEvent());
-              },
-            );
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ErrorDialog.show(
+                context,
+                title: 'Error Loading Countries',
+                message: state.message,
+                onRetry: () {
+                  context.read<CountriesBloc>().add(const FetchCountriesEvent());
+                },
+              );
+            });
+            return const SizedBox.shrink();
           }
           return const SizedBox.shrink();
         },
